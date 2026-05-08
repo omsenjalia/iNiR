@@ -105,7 +105,7 @@ ContentPage {
     function audioCodecDisplayName(codec) {
         switch (codec) {
         case "aac": return Translation.tr("AAC")
-        case "libopus": return Translation.tr("Opus")
+        case "libopus": return Translation.tr("Libopus")
         case "opus": return Translation.tr("Opus")
         default: return codec
         }
