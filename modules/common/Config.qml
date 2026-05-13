@@ -644,6 +644,9 @@ Singleton {
                         property int size: 32
                         property bool snap: true
                     }
+
+                    // Freeform container for user custom widgets (dynamic IDs)
+                    property var custom: ({})
                 }
                 property string wallpaperPath: ""
                 property string thumbnailPath: ""

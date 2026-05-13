@@ -456,7 +456,8 @@
             "editGrid": {
                 "size": 32,
                 "snap": true
-            }
+            },
+            "custom": {}
         },
         "multiMonitor": {
             "enable": false

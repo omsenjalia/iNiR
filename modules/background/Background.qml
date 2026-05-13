@@ -1407,17 +1407,21 @@ Variants {
                         required property var modelData
                         required property int index
                         active: Config.options?.background?.widgets?.custom?.[modelData.id]?.enable ?? true
-                        source: modelData.qmlPath
-                        onLoaded: {
-                            if (item) {
-                                item.widgetIndex = 6 + index;
-                                item.screenWidth = bgRoot.screen.width;
-                                item.screenHeight = bgRoot.screen.height;
-                                item.scaledScreenWidth = bgRoot.screen.width;
-                                item.scaledScreenHeight = bgRoot.screen.height;
-                                item.wallpaperScale = 1;
-                            }
+
+                        // setSource passes required properties at construction time
+                        function _load(): void {
+                            setSource(modelData.qmlPath, {
+                                widgetIndex: 6 + index,
+                                screenWidth: bgRoot.screen.width,
+                                screenHeight: bgRoot.screen.height,
+                                scaledScreenWidth: bgRoot.screen.width,
+                                scaledScreenHeight: bgRoot.screen.height,
+                                wallpaperScale: 1,
+                            });
                         }
+                        onActiveChanged: if (active) _load()
+                        Component.onCompleted: if (active) _load()
+
                         Connections {
                             target: bgRoot.screen
                             function onWidthChanged() { if (customWidgetLoader.item) customWidgetLoader.item.screenWidth = bgRoot.screen.width; }
