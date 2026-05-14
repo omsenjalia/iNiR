@@ -84,7 +84,7 @@ AbstractBackgroundWidget {
     property string clockStyle: Config.getNestedValue("background.widgets.clock.style", "cookie")
     property bool forceCenter: (GlobalStates.screenLocked && (Config.options?.lock?.centerClock ?? false))
     property bool wallpaperSafetyTriggered: false
-    needsColText: clockStyle === "digital"
+    needsColText: true
     visibleWhenLocked: true
 
     // --- Clock customization config ---
@@ -98,6 +98,24 @@ AbstractBackgroundWidget {
     property bool showShadow: Config.getNestedValue("background.widgets.clock.showShadow", true)
     property int digitalFontWeight: Config.getNestedValue("background.widgets.clock.digital.fontWeight", 600)
     property int digitalSpacing: Config.getNestedValue("background.widgets.clock.digital.spacing", 6)
+
+    // ── Style-dispatched accent colors ──
+    readonly property color accentPrimary: Appearance.angelEverywhere ? Appearance.angel.colPrimary
+        : Appearance.inirEverywhere ? Appearance.inir.colPrimary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3primary
+        : Appearance.colors.colPrimary
+    readonly property color accentSecondary: Appearance.angelEverywhere ? Appearance.angel.colSecondary
+        : Appearance.inirEverywhere ? Appearance.inir.colSecondary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3secondary
+        : Appearance.colors.colSecondary
+    readonly property color accentTertiary: Appearance.angelEverywhere ? Appearance.angel.colTertiary
+        : Appearance.inirEverywhere ? Appearance.inir.colTertiary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3tertiary
+        : Appearance.colors.colTertiary
+    readonly property color accentPrimaryContainer: Appearance.angelEverywhere ? Appearance.angel.colPrimaryContainer
+        : Appearance.inirEverywhere ? Appearance.inir.colPrimaryContainer
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3primaryContainer
+        : Appearance.colors.colPrimaryContainer
 
     // Local clock with seconds precision when needed
     SystemClock {
@@ -195,6 +213,12 @@ AbstractBackgroundWidget {
                 CookieClock {
                     anchors.horizontalCenter: parent.horizontalCenter
                     scaleFactor: root.scaleFactor
+                    colBackground: root.accentPrimaryContainer
+                    colOnBackground: ColorUtils.mix(root.accentSecondary, root.accentPrimaryContainer, 0.15)
+                    colBackgroundInfo: ColorUtils.mix(root.accentPrimary, root.accentPrimaryContainer, 0.55)
+                    colHourHand: root.accentPrimary
+                    colMinuteHand: root.accentTertiary
+                    colSecondHand: root.accentPrimary
                 }
                 FadeLoader {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -259,7 +283,7 @@ AbstractBackgroundWidget {
                 implicitHeight: statusTextRow.implicitHeight + 5 * 2
                 implicitWidth: statusTextRow.implicitWidth + 5 * 2
                 radius: Appearance.rounding.small
-                color: ColorUtils.transparentize(Appearance.colors.colSecondaryContainer, root.clockStyle === "cookie" ? 0 : 1)
+                color: ColorUtils.transparentize(root.accentPrimaryContainer, root.clockStyle === "cookie" ? 0 : 1)
 
                 Behavior on implicitWidth {
                     animation: NumberAnimation { duration: Appearance.animation.elementResize.duration; easing.type: Appearance.animation.elementResize.type; easing.bezierCurve: Appearance.animation.elementResize.bezierCurve }
@@ -319,7 +343,7 @@ AbstractBackgroundWidget {
         property alias statusText: statusTextWidget.text
         property bool shown: true
         property color textColor: {
-            const base = root.clockStyle === "cookie" ? Appearance.colors.colOnSecondaryContainer : root.colText;
+            const base = root.clockStyle === "cookie" ? root.accentPrimary : root.colText;
             const dark = Qt.rgba(0, 0, 0, 1);
             return ColorUtils.mix(base, dark, root.dimFactor);
         }

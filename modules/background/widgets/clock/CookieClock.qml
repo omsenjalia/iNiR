@@ -29,13 +29,31 @@ Item {
     property real scaleFactor: 1.0
     property real implicitSize: Math.round((Config.getNestedValue("background.widgets.clock.cookie.size", 230)) * scaleFactor)
 
+    // ── Style-dispatched colors (overridable from parent) ──
+    readonly property color _primaryColor: Appearance.angelEverywhere ? Appearance.angel.colPrimary
+        : Appearance.inirEverywhere ? Appearance.inir.colPrimary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3primary
+        : Appearance.colors.colPrimary
+    readonly property color _secondaryColor: Appearance.angelEverywhere ? Appearance.angel.colSecondary
+        : Appearance.inirEverywhere ? Appearance.inir.colSecondary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3secondary
+        : Appearance.colors.colSecondary
+    readonly property color _tertiaryColor: Appearance.angelEverywhere ? Appearance.angel.colTertiary
+        : Appearance.inirEverywhere ? Appearance.inir.colTertiary
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3tertiary
+        : Appearance.colors.colTertiary
+    readonly property color _primaryContainerColor: Appearance.angelEverywhere ? Appearance.angel.colPrimaryContainer
+        : Appearance.inirEverywhere ? Appearance.inir.colPrimaryContainer
+        : Appearance.auroraEverywhere ? Appearance.m3colors.m3primaryContainer
+        : Appearance.colors.colPrimaryContainer
+
     property color colShadow: Appearance.colors.colShadow
-    property color colBackground: Appearance.colors.colPrimaryContainer
-    property color colOnBackground: ColorUtils.mix(Appearance.colors.colSecondary, Appearance.colors.colPrimaryContainer, 0.15)
-    property color colBackgroundInfo: ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colPrimaryContainer, 0.55)
-    property color colHourHand: Appearance.colors.colPrimary
-    property color colMinuteHand: Appearance.colors.colTertiary
-    property color colSecondHand: Appearance.colors.colPrimary
+    property color colBackground: root._primaryContainerColor
+    property color colOnBackground: ColorUtils.mix(root._secondaryColor, root._primaryContainerColor, 0.15)
+    property color colBackgroundInfo: ColorUtils.mix(root._primaryColor, root._primaryContainerColor, 0.55)
+    property color colHourHand: root._primaryColor
+    property color colMinuteHand: root._tertiaryColor
+    property color colSecondHand: root._primaryColor
 
     readonly property list<string> clockNumbers: DateTime.time.split(/[: ]/)
     readonly property int clockHour: parseInt(clockNumbers[0]) % 12
