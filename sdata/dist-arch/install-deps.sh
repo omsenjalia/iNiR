@@ -48,6 +48,7 @@ if [[ -n "${ONLY_MISSING_DEPS:-}" ]]; then
     [kirigami]="kirigami"
     [kdialog]="kdialog"
     [millennium]="millennium-bin"
+    [missioncenter]="mission-center"
   )
 
   _miss_installflags="--needed"
