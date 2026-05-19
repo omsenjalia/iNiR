@@ -542,6 +542,94 @@ Item {
                             onMoved: Config.setNestedValue(card._cfgPrefix + ".dim", Math.round(value))
                         }
                     }
+
+                    // Divider before appearance toggles
+                    Rectangle { width: parent.width; height: 1; color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.06) }
+
+                    // Background toggle (per-widget granularity — some users want a flat
+                    // resources widget but a frosted-glass clock, etc.)
+                    RowLayout {
+                        width: parent.width
+                        spacing: 8
+                        MaterialSymbol { text: "format_color_fill"; iconSize: 16; color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.5) }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: Translation.tr("Background")
+                            color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.7)
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                        }
+                        StyledSwitch {
+                            checked: Config.getNestedValue(card._cfgPrefix + ".showBackground", true)
+                            onCheckedChanged: {
+                                if (checked !== Config.getNestedValue(card._cfgPrefix + ".showBackground", true))
+                                    Config.setNestedValue(card._cfgPrefix + ".showBackground", checked)
+                            }
+                        }
+                    }
+
+                    // Blur toggle (only meaningful when current style supports blur —
+                    // aurora / angel. Hidden on material/inir to avoid a no-op control.)
+                    RowLayout {
+                        width: parent.width
+                        spacing: 8
+                        visible: (Appearance.auroraEverywhere || Appearance.angelEverywhere) && Appearance.effectsEnabled
+                        MaterialSymbol { text: "blur_on"; iconSize: 16; color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.5) }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: Translation.tr("Blur background")
+                            color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.7)
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                        }
+                        StyledSwitch {
+                            checked: Config.getNestedValue(card._cfgPrefix + ".useBlur", true)
+                            onCheckedChanged: {
+                                if (checked !== Config.getNestedValue(card._cfgPrefix + ".useBlur", true))
+                                    Config.setNestedValue(card._cfgPrefix + ".useBlur", checked)
+                            }
+                        }
+                    }
+
+                    // Background opacity slider — tunes how visible the background fill is
+                    RowLayout {
+                        width: parent.width
+                        spacing: 8
+                        visible: Config.getNestedValue(card._cfgPrefix + ".showBackground", true)
+                        MaterialSymbol { text: "opacity"; iconSize: 16; color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.5) }
+                        StyledText {
+                            text: Translation.tr("BG opacity")
+                            color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.7)
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                        }
+                        StyledSlider {
+                            Layout.fillWidth: true
+                            from: 0; to: 100; stepSize: 1
+                            configuration: StyledSlider.Configuration.XS
+                            stopIndicatorValues: []
+                            value: Math.round((Config.getNestedValue(card._cfgPrefix + ".backgroundOpacity", 0.06)) * 100)
+                            tooltipContent: Math.round(value) + "%"
+                            onMoved: Config.setNestedValue(card._cfgPrefix + ".backgroundOpacity", Math.round(value) / 100)
+                        }
+                    }
+
+                    // Border toggle
+                    RowLayout {
+                        width: parent.width
+                        spacing: 8
+                        MaterialSymbol { text: "border_style"; iconSize: 16; color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.5) }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: Translation.tr("Border")
+                            color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.7)
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                        }
+                        StyledSwitch {
+                            checked: Config.getNestedValue(card._cfgPrefix + ".showBorder", true)
+                            onCheckedChanged: {
+                                if (checked !== Config.getNestedValue(card._cfgPrefix + ".showBorder", true))
+                                    Config.setNestedValue(card._cfgPrefix + ".showBorder", checked)
+                            }
+                        }
+                    }
                 }
             }
         }

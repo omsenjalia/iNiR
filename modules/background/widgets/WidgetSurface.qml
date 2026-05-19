@@ -23,11 +23,15 @@ Rectangle {
     property real surfaceBorderOpacity: 0.08
     property color surfaceColor: Appearance.colors.colOnLayer0
     property real surfaceRadius: Appearance.rounding.small
+    // Allows per-widget blur override. When false, blur is disabled even if the
+    // active style (aurora/angel) supports it. Lets users get a flat,
+    // non-blurred resources widget while keeping a frosted-glass clock, etc.
+    property bool surfaceUseBlur: true
 
     readonly property bool _angel: Appearance.angelEverywhere
     readonly property bool _aurora: Appearance.auroraEverywhere && !Appearance.inirEverywhere
     readonly property bool _inir: Appearance.inirEverywhere
-    readonly property bool _glass: (_aurora || _angel) && Appearance.effectsEnabled
+    readonly property bool _glass: (_aurora || _angel) && Appearance.effectsEnabled && root.surfaceUseBlur
     readonly property string _wallpaperUrl: Wallpapers.effectiveWallpaperUrl
 
     radius: surfaceRadius

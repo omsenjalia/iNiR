@@ -734,6 +734,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: false
+                        property bool useBlur: true
                         property bool showBorder: false
                         property real backgroundOpacity: 0
                         property real borderWidth: 0
@@ -823,6 +824,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: true
+                        property bool useBlur: true
                         property bool showBorder: true
                         property real backgroundOpacity: 0.06
                         property real borderWidth: 1
@@ -856,6 +858,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: true
+                        property bool useBlur: true
                         property bool showBorder: true
                         property real backgroundOpacity: 0.06
                         property real borderWidth: 1
@@ -883,6 +886,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: true
+                        property bool useBlur: true
                         property bool showBorder: true
                         property real backgroundOpacity: 0.06
                         property real borderWidth: 1
@@ -907,6 +911,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: true
+                        property bool useBlur: true
                         property bool showBorder: true
                         property real backgroundOpacity: 0.10
                         property real borderWidth: 1
@@ -932,6 +937,7 @@ Singleton {
                         property int widgetScale: 100
                         property int widgetOpacity: 100
                         property bool showBackground: true
+                        property bool useBlur: true
                         property bool showBorder: true
                         property real backgroundOpacity: 0.10
                         property real borderWidth: 1

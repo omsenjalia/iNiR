@@ -180,6 +180,7 @@ AbstractBackgroundWidget {
         surfaceBorderWidth: root.borderWidth
         surfaceBorderOpacity: root.borderOpacity
         surfaceColor: root.colText
+        surfaceUseBlur: root.useBlur
         screenX: root.x
         screenY: root.y
         screenWidth: root.scaledScreenWidth

@@ -82,6 +82,13 @@ Scope {
             return Boolean(bgRoot._widgetConfigValue(widgetKey, "enable", fallback));
         }
 
+        // True if any widget on this background needs keyboard input (sticky notes
+        // today, future text-entry widgets later). Used to flip the layer-shell
+        // surface to focusable=true so TextEdits actually receive key events.
+        // Without this the Bottom layer is keyboard-inert and clicks reach the
+        // TextEdit but typing does nothing.
+        readonly property bool _needsKeyboardFocus: bgRoot._widgetEnabled("notes", false)
+
         // Zone occupancy: map zone name → array of widget names
         readonly property var _builtinWidgets: [
             { key: "weather",        defaultOn: true,  icon: "cloud" },
@@ -433,6 +440,14 @@ Scope {
         // Keep background behind the lock surface. Moving this to Overlay can capture input.
         WlrLayershell.layer: WlrLayer.Bottom
         WlrLayershell.namespace: "quickshell:background"
+        // Make the desktop layer focusable only when an interactive widget needs it
+        // (sticky notes today). With OnDemand the compositor only routes keyboard
+        // input to us when the user clicks on the surface, so it doesn't steal
+        // focus from real apps. When no interactive widget is enabled we stay
+        // None to keep things lean.
+        WlrLayershell.keyboardFocus: bgRoot._needsKeyboardFocus
+            ? WlrKeyboardFocus.OnDemand
+            : WlrKeyboardFocus.None
         anchors { top: true; bottom: true; left: true; right: true }
         color: {
             if (!bgRoot.wallpaperSafetyTriggered || bgRoot.wallpaperIsVideo) return "transparent";
