@@ -47,7 +47,7 @@ AbstractWidget {
         return Math.max(0, Math.min(1, Number.isFinite(v) ? v / 100 : 1.0));
     }
     readonly property bool showBackground: root._readConfigKey("showBackground") ?? true
-    readonly property bool useBlur: root._readConfigKey("useBlur") ?? !(Appearance.auroraEverywhere || Appearance.angelEverywhere)
+    readonly property bool useBlur: root._readConfigKey("useBlur") ?? false
     readonly property bool showBorder: root._readConfigKey("showBorder") ?? true
     // Granular card controls — override booleans when present
     readonly property real backgroundOpacity: {
