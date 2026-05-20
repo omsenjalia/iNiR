@@ -589,9 +589,9 @@ Item {
                             font.pixelSize: Appearance.font.pixelSize.smaller
                         }
                         StyledSwitch {
-                            checked: Config.getNestedValue(card._cfgPrefix + ".useBlur", true)
+                            checked: Config.getNestedValue(card._cfgPrefix + ".useBlur", false)
                             onCheckedChanged: {
-                                if (checked !== Config.getNestedValue(card._cfgPrefix + ".useBlur", true))
+                                if (checked !== Config.getNestedValue(card._cfgPrefix + ".useBlur", false))
                                     Config.setNestedValue(card._cfgPrefix + ".useBlur", checked)
                             }
                         }
