@@ -117,10 +117,12 @@ AbstractBackgroundWidget {
         : Appearance.auroraEverywhere ? Appearance.m3colors.m3primaryContainer
         : Appearance.colors.colPrimaryContainer
 
-    // Local clock with seconds precision when needed
+    // Local clock with seconds precision when needed (and power is active)
     SystemClock {
         id: displayClock
-        precision: root.showSeconds || GlobalStates.screenLocked ? SystemClock.Seconds : SystemClock.Minutes
+        // Drop to minutes precision when power is reduced to save CPU
+        precision: (root.showSeconds || GlobalStates.screenLocked) && root.powerActive
+            ? SystemClock.Seconds : SystemClock.Minutes
     }
 
     // --- Resolved format patterns (reactive) ---

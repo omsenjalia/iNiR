@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import qs.modules.common
+import qs.services
 
 Item {
     id: root
@@ -20,7 +21,8 @@ Item {
     property real shapeRotation: 0
 
     Loader {
-        active: constantlyRotate
+        // Only load FrameAnimation when actively rotating AND power is on
+        active: constantlyRotate && WidgetPowerManager.widgetsActive
         sourceComponent: FrameAnimation {
             running: true
             onTriggered: {

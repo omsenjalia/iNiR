@@ -28,6 +28,10 @@ Rectangle {
     // non-blurred resources widget while keeping a frosted-glass clock, etc.
     property bool surfaceUseBlur: true
 
+    // Power management: when false, disable expensive blur operations.
+    // Parent widgets should bind this to their powerActive property.
+    property bool powerActive: WidgetPowerManager.widgetsActive
+
     readonly property bool _angel: Appearance.angelEverywhere
     readonly property bool _aurora: Appearance.auroraEverywhere && !Appearance.inirEverywhere
     readonly property bool _inir: Appearance.inirEverywhere
@@ -81,8 +85,8 @@ Rectangle {
         sourceSize.width: root.screenWidth
         sourceSize.height: root.screenHeight
 
-        // OPTIMIZATION: Release FBO when widget is not visible
-        layer.enabled: root._glass && !Appearance.compositorBlurActive && root.visible
+        // OPTIMIZATION: Release FBO when widget is not visible or power is off
+        layer.enabled: root._glass && !Appearance.compositorBlurActive && root.visible && root.powerActive
         layer.effect: MultiEffect {
             source: blurredWallpaper
             anchors.fill: source

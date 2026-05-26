@@ -122,7 +122,8 @@ Item {
         target: useSineCookie ? sineCookieLoader : roundedPolygonCookieLoader
 
         RotationAnimation on rotation {
-            running: root.constantlyRotate
+            // Pause rotation when power is off to save GPU
+            running: root.constantlyRotate && WidgetPowerManager.widgetsActive
             duration: 30000
             easing.type: Easing.Linear
             loops: Animation.Infinite

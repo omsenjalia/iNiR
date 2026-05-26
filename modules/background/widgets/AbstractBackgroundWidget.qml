@@ -268,6 +268,22 @@ AbstractWidget {
     Behavior on opacity {
         animation: NumberAnimation { duration: Appearance.animation.elementMoveFast.duration; easing.type: Appearance.animation.elementMoveFast.type; easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve }
     }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // POWER MANAGEMENT - Inherited by all widgets
+    // ══════════════════════════════════════════════════════════════════════
+    // Widgets should check these properties before running expensive operations
+    // (blur layers, animations, Cava subscriptions, frequent timers)
+
+    // True when widgets should be fully active (no fullscreen, no gamemode, not covered)
+    readonly property bool powerActive: WidgetPowerManager.widgetsActive
+
+    // True when widgets should reduce activity (lower precision clocks, longer intervals)
+    readonly property bool powerReduced: WidgetPowerManager.reducedMode
+
+    // Effective animation state: animations enabled AND power active
+    readonly property bool animationsActive: Appearance.animationsEnabled && root.powerActive
+
     // No Item.scale — widgets use scaleFactor for layout math to avoid bitmap blur
 
     // In edit mode, allow dragging regardless of strategy (user can reposition freely)
