@@ -30,7 +30,7 @@ Rectangle {
 
     AngelPartialBorder { targetRadius: root.radius; coverage: 0.5 }
     visible: tabs.length > 0
-    implicitHeight: (tabs.length > 0) ? (collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : Math.max(bottomWidgetGroupRow.implicitHeight, 300)) : 0
+    implicitHeight: (tabs.length > 0) ? (collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : bottomWidgetGroupRow.implicitHeight) : 0
 
     Behavior on implicitHeight {
         enabled: Appearance.animationsEnabled

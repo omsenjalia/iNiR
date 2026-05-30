@@ -115,45 +115,31 @@ Scope {
                 anchors.fill: parent
                 readonly property bool isCompact: (Config?.options?.sidebar?.layout ?? "default") === "compact"
 
-                Loader {
+                // FadeLoader (active: shown) only instantiates the shown layout; the 2.25.2 raw
+                // Loader stayed active permanently and mounted during the broken preload.
+                FadeLoader {
                     id: defaultLoader
                     anchors.fill: parent
-                    active: !contentStack.isCompact || opacity > 0
-                    opacity: contentStack.isCompact ? 0 : 1
-                    visible: opacity > 0
+                    shown: !contentStack.isCompact
                     scale: contentStack.isCompact ? 0.96 : 1
                     transformOrigin: Item.Center
-
-                    Behavior on opacity {
-                        enabled: Appearance.animationsEnabled
-                        NumberAnimation { duration: Appearance.animation.elementMoveFast.duration; easing.type: Appearance.animation.elementMoveFast.type; easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve }
-                    }
                     Behavior on scale {
                         enabled: Appearance.animationsEnabled
                         NumberAnimation { duration: Appearance.animation.elementResize.duration; easing.type: Appearance.animation.elementResize.type; easing.bezierCurve: Appearance.animation.elementResize.bezierCurve }
                     }
-
                     sourceComponent: defaultContentComponent
                 }
 
-                Loader {
+                FadeLoader {
                     id: compactLoader
                     anchors.fill: parent
-                    active: contentStack.isCompact || opacity > 0
-                    opacity: contentStack.isCompact ? 1 : 0
-                    visible: opacity > 0
+                    shown: contentStack.isCompact
                     scale: contentStack.isCompact ? 1 : 0.96
                     transformOrigin: Item.Center
-
-                    Behavior on opacity {
-                        enabled: Appearance.animationsEnabled
-                        NumberAnimation { duration: Appearance.animation.elementMoveFast.duration; easing.type: Appearance.animation.elementMoveFast.type; easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve }
-                    }
                     Behavior on scale {
                         enabled: Appearance.animationsEnabled
                         NumberAnimation { duration: Appearance.animation.elementResize.duration; easing.type: Appearance.animation.elementResize.type; easing.bezierCurve: Appearance.animation.elementResize.bezierCurve }
                     }
-
                     sourceComponent: compactContentComponent
                 }
             }
@@ -161,7 +147,9 @@ Scope {
 
         Loader {
             id: sidebarContentLoader
-            active: GlobalStates.sidebarRightOpen || (Config?.options?.sidebar?.keepRightSidebarLoaded ?? true)
+            // Gate on height > 0: panel preloads with unmapped surface (height 0); top+bottom anchors
+            // then yield negative height that mounts the content broken until a layout toggle.
+            active: (GlobalStates.sidebarRightOpen || (Config?.options?.sidebar?.keepRightSidebarLoaded ?? true)) && height > 0
 
             // Shell desaturation effect
             layer.enabled: Appearance.shouldDesaturate("sidebars") && sidebarContentLoader.visible
