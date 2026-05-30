@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects as GE
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import qs.services
@@ -520,6 +521,16 @@ Scope {
                 }
             }
         }
+    }
+
+    IpcHandler {
+        target: "settingsNav"
+        function page(index: int): void {
+            GlobalStates.settingsOverlayOpen = true
+            root.overlayCurrentPage = index
+        }
+        function count(): int { return root.overlayPages.length }
+        function current(): int { return root.overlayCurrentPage }
     }
 
     Loader {
