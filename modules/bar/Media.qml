@@ -271,56 +271,67 @@ Item {
 
             readonly property string fullText: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
             readonly property bool overflowing: titleText.implicitWidth > width + 1
-            readonly property real scrollDistance: Math.max(0, titleText.implicitWidth - width)
+            // Continuous wraparound: scroll one text width + gap, then loop. The
+            // trailing copy enters from the right exactly as the first exits left,
+            // so it reads as a single seamless ribbon with no fade-snap.
+            readonly property real gap: 40
+            readonly property real loopDistance: titleText.implicitWidth + gap
 
-            // Reset x to 0 whenever the marquee should be parked. Covers the
-            // overflow→fit transition (where SequentialAnimation on x would
-            // otherwise leave x at the last animated offset) and the text
-            // change case in one place.
-            onOverflowingChanged: if (!overflowing) titleText.x = 0
+            // Reset x to 0 whenever the marquee should be parked.
+            onOverflowingChanged: if (!overflowing) marqueeRow.x = 0
 
-            StyledText {
-                id: titleText
+            Row {
+                id: marqueeRow
                 height: parent.height
-                verticalAlignment: Text.AlignVCenter
-                // Centered when it fits; scrolls (marquee) when it overflows.
-                horizontalAlignment: titleScroller.overflowing ? Text.AlignLeft : Text.AlignHCenter
-                width: titleScroller.overflowing ? implicitWidth : parent.width
-                elide: Text.ElideNone
-                color: Appearance.inirEverywhere ? Appearance.inir.colText
-                    : Appearance.auroraEverywhere ? Appearance.colors.colOnLayer0
-                    : Appearance.colors.colOnLayer1
-                text: titleScroller.fullText
+                spacing: titleScroller.gap
                 x: 0
-                opacity: 1
-                onTextChanged: {
-                    if (!titleScroller.overflowing) x = 0
-                    // Restart the marquee from a known state so a new song
-                    // doesn't pick up the previous song's slide position.
-                    if (marqueeLoop.running) marqueeLoop.restart()
+
+                StyledText {
+                    id: titleText
+                    height: marqueeRow.height
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: titleScroller.overflowing ? Text.AlignLeft : Text.AlignHCenter
+                    width: titleScroller.overflowing ? implicitWidth : titleScroller.width
+                    elide: Text.ElideNone
+                    color: Appearance.inirEverywhere ? Appearance.inir.colText
+                        : Appearance.auroraEverywhere ? Appearance.colors.colOnLayer0
+                        : Appearance.colors.colOnLayer1
+                    text: titleScroller.fullText
+                    onTextChanged: {
+                        if (!titleScroller.overflowing) marqueeRow.x = 0
+                        if (marqueeLoop.running) marqueeLoop.restart()
+                    }
+                }
+
+                // Trailing copy — only present while scrolling, enters from the right.
+                StyledText {
+                    height: marqueeRow.height
+                    verticalAlignment: Text.AlignVCenter
+                    visible: titleScroller.overflowing
+                    elide: Text.ElideNone
+                    color: titleText.color
+                    font: titleText.font
+                    text: titleScroller.fullText
                 }
             }
 
-            // One-way ticker: hold at start so the user can read the song,
-            // glide left at constant speed, hold at end, then fade-snap back to
-            // start (no slow back-slide). Feels much closer to a system tray
-            // marquee than a ping-pong panning animation.
+            // Seamless continuous ticker: hold at start, glide left by one full
+            // text+gap, then loop instantly — the duplicate is already in the gap
+            // position so there is no visible jump.
             SequentialAnimation {
                 id: marqueeLoop
                 running: titleScroller.overflowing && Appearance.animationsEnabled
                 loops: Animation.Infinite
-                onStopped: { titleText.x = 0; titleText.opacity = 1 }
+                onStopped: marqueeRow.x = 0
                 PauseAnimation { duration: 1800 }
                 NumberAnimation {
-                    target: titleText; property: "x"
-                    to: -titleScroller.scrollDistance
-                    duration: Math.max(1500, titleScroller.scrollDistance * 22)
+                    target: marqueeRow; property: "x"
+                    from: 0
+                    to: -titleScroller.loopDistance
+                    duration: Math.max(3500, titleScroller.loopDistance * 42)
                     easing.type: Easing.Linear
                 }
-                PauseAnimation { duration: 1100 }
-                NumberAnimation { target: titleText; property: "opacity"; to: 0; duration: 200; easing.type: Easing.OutQuad }
-                PropertyAction { target: titleText; property: "x"; value: 0 }
-                NumberAnimation { target: titleText; property: "opacity"; to: 1; duration: 240; easing.type: Easing.InQuad }
+                PropertyAction { target: marqueeRow; property: "x"; value: 0 }
             }
         }
 
