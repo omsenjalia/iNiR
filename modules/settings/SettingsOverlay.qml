@@ -1488,9 +1488,14 @@ Scope {
                                         required property int index
                                         anchors.fill: parent
                                         active: Config.ready && (overlayPagesStack.visitedPages[index] === true)
-                                        // Always async: sync-loading the current page blocked the UI
-                                        // thread on first visit, causing per-click freezes.
-                                        asynchronous: true
+                                        // Match the windowed settings.qml: load the page the user
+                                        // is navigating to SYNCHRONOUSLY (one brief single-page
+                                        // hitch) and only background-load the others. Forcing async
+                                        // on the current page made the heavy *Config.qml pages
+                                        // (1k-3k lines) sit behind the loading spinner "for an
+                                        // eternity" on every nav click. Visited pages stay loaded,
+                                        // so the sync cost is paid at most once per page per session.
+                                        asynchronous: index !== overlayCurrentPage
                                         source: overlayPages[index].component
 
                                         readonly property bool isCurrentPage: index === overlayCurrentPage && status === Loader.Ready
