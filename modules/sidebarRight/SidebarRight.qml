@@ -147,9 +147,14 @@ Scope {
 
         Loader {
             id: sidebarContentLoader
-            // Gate on height > 0: panel preloads with unmapped surface (height 0); top+bottom anchors
-            // then yield negative height that mounts the content broken until a layout toggle.
-            active: (GlobalStates.sidebarRightOpen || (Config?.options?.sidebar?.keepRightSidebarLoaded ?? true)) && height > 0
+            // Latch first valid mount: the panel preloads with an unmapped surface (height 0); top+bottom
+            // anchors then yield negative height that mounts the content broken until a layout toggle.
+            // We only need height>0 for that FIRST mount — once latched we keep the content loaded per
+            // keepRightSidebarLoaded, so closing (surface unmaps, height→0) does NOT destroy and rebuild
+            // it, which was making every re-open laggy unlike sidebarLeft.
+            property bool _everMounted: false
+            onHeightChanged: if (height > 0) _everMounted = true
+            active: (GlobalStates.sidebarRightOpen || (Config?.options?.sidebar?.keepRightSidebarLoaded ?? true)) && (height > 0 || _everMounted)
 
             // Shell desaturation effect
             layer.enabled: Appearance.shouldDesaturate("sidebars") && sidebarContentLoader.visible
@@ -163,7 +168,7 @@ Scope {
                 leftMargin: Appearance.sizes.elevationMargin
             }
             width: sidebarWidth - Appearance.sizes.hyprlandGapsOut - Appearance.sizes.elevationMargin
-            height: parent.height - Appearance.sizes.hyprlandGapsOut * 2
+            height: Math.max(0, parent.height - Appearance.sizes.hyprlandGapsOut * 2)
 
             // Animation properties driven by states/transitions below
             property real animTranslateX: (sidebarWidth + Appearance.sizes.hyprlandGapsOut)
