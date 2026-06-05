@@ -104,6 +104,10 @@ I wanted my desktop to look and work a certain way and nothing else did exactly 
 
 ---
 
+> [!WARNING]
+> Not for low-spec machines.
+ Everything is customizable though - disable features, strip panels, flatten the design. Read the docs, tweak `Config.json`/`Settings UI`, you'll figure it out.
+
 ## Features
 
 **Two panel families**, switchable on the fly with `Super+Shift+W`:
