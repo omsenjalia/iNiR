@@ -37,6 +37,9 @@ Singleton {
     property bool settingsOverlayOpen: false
     property int settingsOverlayRequestedPage: -1 // Set before opening to navigate to a specific page
     property bool regionSelectorOpen: false
+    // Native screenshot annotation editor (Edit action)
+    property bool annotationEditorOpen: false
+    property string annotationEditorPath: ""
     property bool screenLocked: false
     property bool screenLockContainsCharacters: false
     property bool screenUnlockFailed: false

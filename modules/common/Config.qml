@@ -1631,6 +1631,9 @@ Singleton {
                 }
                 property JsonObject annotation: JsonObject {
                     property bool useSatty: false
+                    // Use the in-shell native annotation editor for the Edit action
+                    // instead of the external swappy/satty tools.
+                    property bool useNativeEditor: true
                 }
                 property string screenshotNameFormat: "ss-%Y%m%d-%H%M%S" // date(1) format for screenshot filenames (without extension)
             }

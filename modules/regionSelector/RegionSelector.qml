@@ -40,6 +40,13 @@ Scope {
         }
     }
 
+    // Native annotation editor (Edit action). Lives in this Scope so it survives
+    // the selection overlay dismissing.
+    Loader {
+        active: GlobalStates.annotationEditorOpen
+        sourceComponent: AnnotationEditor {}
+    }
+
     function screenshot() {
         root.action = RegionSelection.SnipAction.Copy
         root.selectionMode = RegionSelection.SelectionMode.RectCorners

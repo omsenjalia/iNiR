@@ -1010,6 +1010,10 @@
             "selectionPadding": 5,
             "showLabel": false,
             "windows": true
+        },
+        "annotation": {
+            "useSatty": false,
+            "useNativeEditor": true
         }
     },
     "resources": {
