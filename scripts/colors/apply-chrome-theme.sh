@@ -296,16 +296,25 @@ apply_to_browser() {
   # 1. Fix preferences first — ensures GM3 theme engine generates correct dark/light palette
   fix_preferences "$prefs_dir" "$name" "$pref_cs2"
 
-  # 2. Write policy — BrowserThemeColor (persists across restarts)
+  # 2. Write policy — BrowserThemeColor persists across restarts.
+  # BackgroundModeEnabled prevents Chromium-based browsers from staying resident
+  # after a headless policy refresh or after the last window closes.
   if ensure_policy_dir_writable "$policy_dir" "$name"; then
-    printf '{"BrowserThemeColor": "%s"}\n' "$theme_color" > "$policy_dir/ii-theme.json"
+    printf '{"BrowserThemeColor": "%s", "BackgroundModeEnabled": false}\n' "$theme_color" > "$policy_dir/ii-theme.json"
     policy_written='true'
     log "$name: policy written to $policy_dir/ii-theme.json"
   else
     log "$name: BrowserThemeColor policy unavailable; standard Chrome/Brave will only get dark/light frame prefs"
   fi
 
-  # 3. Apply live
+  # 3. Apply live, but only if the browser is already running. Calling Chromium
+  # with --refresh-platform-policy --no-startup-window while it is closed starts
+  # a background browser process with no window, which wastes memory.
+  if ! pgrep -x "$bin" >/dev/null 2>&1; then
+    log "$name: not running; skipping live policy refresh"
+    return 0
+  fi
+
   if is_omarchy "$bin"; then
     omarchy_browser='true'
     local rgb_color
