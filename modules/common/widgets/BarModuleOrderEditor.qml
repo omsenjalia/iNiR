@@ -225,13 +225,22 @@ ColumnLayout {
         height: root.rowH
         radius: Appearance.rounding.small
         color: pivot ? Appearance.colors.colSecondaryContainer
-            : (dragMa.containsMouse || beingDragged ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1)
+            : (beingDragged ? Appearance.colors.colLayer2
+            : (dragMa.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1))
         border.color: beingDragged ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
         border.width: pivot ? 0 : 1
-        opacity: beingDragged ? 0.92 : 1
-        scale: beingDragged ? 1.02 : 1
+        scale: beingDragged ? 1.03 : 1
+        rotation: beingDragged ? 0.6 : 0
         Behavior on scale { enabled: Appearance.animationsEnabled; NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+        Behavior on rotation { enabled: Appearance.animationsEnabled; NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
         Behavior on color { enabled: Appearance.animationsEnabled; ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
+
+        // Lift shadow while floating over the zones
+        StyledRectangularShadow {
+            target: rowRoot.beingDragged ? rowRoot : null
+            visible: rowRoot.beingDragged
+            z: -1
+        }
 
         readonly property color _fg: pivot ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
         readonly property color _fgSubtle: pivot ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colSubtext
@@ -446,9 +455,10 @@ ColumnLayout {
                     Rectangle {
                         id: dropSlot
                         visible: zoneCard.dropActive && root.dropIndex >= 0 && zoneDrop.liveCount > 0
-                        width: parent.width
-                        height: 3
-                        radius: 1.5
+                        x: 6
+                        width: parent.width - 12
+                        height: 4
+                        radius: 2
                         color: Appearance.colors.colPrimary
                         y: Math.min(root.dropIndex, zoneDrop.liveCount) * root.pitch - root.rowGap / 2 - height / 2
                         z: 50
@@ -456,6 +466,9 @@ ColumnLayout {
                             enabled: Appearance.animationsEnabled
                             NumberAnimation { duration: Appearance.animation.elementMoveFast.duration; easing.type: Appearance.animation.elementMoveFast.type; easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve }
                         }
+                        // End caps make the insert slot read as a slot, not a divider
+                        Rectangle { width: 8; height: 8; radius: 4; color: parent.color; anchors.verticalCenter: parent.verticalCenter; x: -4 }
+                        Rectangle { width: 8; height: 8; radius: 4; color: parent.color; anchors.verticalCenter: parent.verticalCenter; x: parent.width - 4 }
                     }
                 }
             }
