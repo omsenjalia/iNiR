@@ -639,99 +639,99 @@ cat > "$GTK3_CSS" << EOF
 @define-color sidebar_backdrop_color ${BG};
 
 headerbar {
-    background-color: ${APP_HEADERBAR_BG} !important;
-    box-shadow: none !important;
-    border-bottom: none !important;
+    background-color: ${APP_HEADERBAR_BG};
+    box-shadow: none;
+    border-bottom: none;
 }
 
 headerbar separator {
-    background-color: transparent !important;
+    background-color: transparent;
 }
 
 .nautilus-window .sidebar,
 .nautilus-window sidebar,
 placessidebar,
 placessidebar list {
-    background-color: ${APP_SIDEBAR_BG} !important;
-    color: ${FG} !important;
-    border-right: none !important;
+    background-color: ${APP_SIDEBAR_BG};
+    color: ${FG};
+    border-right: none;
 }
 
 placessidebar row {
-    background-color: transparent !important;
-    color: ${FG} !important;
+    background-color: transparent;
+    color: ${FG};
 }
 
 placessidebar row:hover {
-    background-color: ${ROW_HOVER_BG} !important;
+    background-color: ${ROW_HOVER_BG};
 }
 
 placessidebar row:selected,
 placessidebar row:selected:hover {
-    background-color: ${ROW_ACTIVE_BG} !important;
-    color: ${ROW_SELECTED_FG} !important;
+    background-color: ${ROW_ACTIVE_BG};
+    color: ${ROW_SELECTED_FG};
 }
 
 placessidebar image {
-    color: inherit !important;
+    color: inherit;
 }
 
 .view {
-    background-color: ${BG} !important;
+    background-color: ${BG};
 }
 
 separator.sidebar {
-    background-color: transparent !important;
+    background-color: transparent;
     min-width: 0;
 }
 
 /* Context menus and popovers */
 popover,
 popover.background {
-    background-color: ${APP_POPOVER_BG} !important;
-    color: ${ON_SURFACE} !important;
+    background-color: ${APP_POPOVER_BG};
+    color: ${ON_SURFACE};
 }
 
 menu,
 .context-menu,
 .popup {
-    background-color: ${APP_POPOVER_BG} !important;
-    color: ${ON_SURFACE} !important;
+    background-color: ${APP_POPOVER_BG};
+    color: ${ON_SURFACE};
 }
 
 menuitem {
-    color: ${ON_SURFACE} !important;
+    color: ${ON_SURFACE};
 }
 
 menuitem:hover,
 menuitem:selected {
-    background-color: ${ROW_HOVER_BG} !important;
+    background-color: ${ROW_HOVER_BG};
 }
 
 menuitem:active,
 menuitem:selected:active {
-    background-color: ${ROW_ACTIVE_BG} !important;
-    color: ${ROW_SELECTED_FG} !important;
+    background-color: ${ROW_ACTIVE_BG};
+    color: ${ROW_SELECTED_FG};
 }
 
 button:hover {
-    background-color: ${ROW_HOVER_BG} !important;
+    background-color: ${ROW_HOVER_BG};
 }
 
 button:active {
-    background-color: ${ROW_ACTIVE_BG} !important;
-    color: ${ROW_SELECTED_FG} !important;
+    background-color: ${ROW_ACTIVE_BG};
+    color: ${ROW_SELECTED_FG};
 }
 
 entry:focus,
 textview:focus,
 spinbutton:focus {
-    border-color: alpha(${PRIMARY}, 0.60) !important;
-    box-shadow: 0 0 0 1px alpha(${PRIMARY}, 0.25) inset !important;
+    border-color: alpha(${PRIMARY}, 0.60);
+    box-shadow: 0 0 0 1px alpha(${PRIMARY}, 0.25) inset;
 }
 
 menu separator {
-    background-color: alpha(${ON_SURFACE}, 0.12) !important;
+    background-color: alpha(${ON_SURFACE}, 0.12);
 }
 EOF
 
