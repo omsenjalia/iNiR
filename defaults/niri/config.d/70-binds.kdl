@@ -270,4 +270,8 @@ binds {
     Mod+Shift+P    { spawn "inir" "mpris" "playPause"; }
     Mod+Shift+N    { spawn "inir" "mpris" "next"; }
     Mod+Shift+B    { spawn "inir" "mpris" "previous"; }
+
+    // Power profile cycling (Fn+Q)
+    XF86Launch4 allow-when-locked=true { spawn "inir" "powerProfile" "cycle"; }
+    Shift+XF86Launch4 allow-when-locked=true { spawn "inir" "powerProfile" "cycle"; }
 }

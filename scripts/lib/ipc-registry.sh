@@ -2,8 +2,8 @@
 # Auto-generated from QML IpcHandler declarations + docs/IPC.md metadata.
 # Do not edit manually.
 # Regenerate: python3 scripts/lib/generate-ipc-registry.py
-# IPC.md hash: 0fcb5c3ba72f0099
-# Targets: 51
+# IPC.md hash: 8222edd0e866e4d5
+# Targets: 52
 
 declare -gA IPC_TARGET_DESC=(
   [ai]="AI chat service. Multi-provider (Gemini, OpenAI, Mistral) with tool support."
@@ -36,6 +36,7 @@ declare -gA IPC_TARGET_DESC=(
   [overview]="Toggle the workspace overview panel. The one with all your windows looking tiny and organized."
   [packageSearch]="Package search service. Searches pacman repos and installed packages."
   [panelFamily]="Switch between panel styles. ii supports two visual styles: Material ii (default) and Waffle (Windows 11-like)."
+  [powerProfile]="Power profile management using UPower. Cycle between profiles or set a specific profile directly."
   [recordingOsd]="Screen recording floating pill OSD. Shows elapsed time and stop button during active recording."
   [region]="Region selection tools. Screenshots, OCR, recording. Draw a box, get stuff done."
   [search]="Waffle start menu / search."
@@ -90,6 +91,7 @@ declare -gA IPC_TARGET_FAMILY=(
   [overview]="shared"
   [packageSearch]="shared"
   [panelFamily]="shared"
+  [powerProfile]="waffle"
   [recordingOsd]="waffle"
   [region]="shared"
   [search]="waffle"
@@ -144,6 +146,7 @@ declare -gA IPC_TARGET_FUNCTIONS=(
   [overview]="toggle close open toggleReleaseInterrupt clipboardToggle actionOpen"
   [packageSearch]="search results"
   [panelFamily]="cycle set"
+  [powerProfile]="cycle set"
   [recordingOsd]="toggle show hide"
   [region]="screenshot search googleLens ocr record recordWithSound menu"
   [search]="toggle close open"
@@ -262,6 +265,8 @@ declare -gA IPC_FUNCTION_DESC=(
   ["packageSearch:results"]="Print current search results"
   ["panelFamily:cycle"]="Cycle to next panel family (ii → waffle → ii)"
   ["panelFamily:set"]="Set specific family (\"ii\" or \"waffle\")"
+  ["powerProfile:cycle"]="Cycle to the next power profile"
+  ["powerProfile:set"]="Set a specific power profile (e.g. \`power-saver\`, \`balanced\`, \`performance\`)"
   ["recordingOsd:toggle"]="Stop the current recording (if active)"
   ["recordingOsd:show"]="Reveal the recording OSD pill"
   ["recordingOsd:hide"]="Collapse/hide the recording OSD pill"
@@ -271,7 +276,7 @@ declare -gA IPC_FUNCTION_DESC=(
   ["region:ocr"]="OCR text recognition"
   ["region:record"]="Record region (no audio)"
   ["region:recordWithSound"]="Record region with audio"
-  ["region:menu"]="Open the unified snip menu (pick action/scope inline)"
+  ["region:menu"]=""
   ["search:toggle"]="Open/close start menu"
   ["search:close"]="Close start menu"
   ["search:open"]="Open start menu"
@@ -352,6 +357,7 @@ declare -gA IPC_FUNCTION_ARGS=(
   ["minimize:restore"]="<windowId>"
   ["packageSearch:search"]="<query>"
   ["panelFamily:set"]="<family>"
+  ["powerProfile:set"]="<profileName>"
   ["settingsNav:page"]="<index>"
   ["wallpaperSelector:toggleOnMonitor"]="<monitorName>"
 )
@@ -374,10 +380,10 @@ bind "Mod+Alt+P" { spawn "inir" "mpris" "previous"; }'
   [overlay]='bind "Super+G" { spawn "inir" "overlay" "toggle"; }'
   [overview]='bind "Mod+Space" { spawn "inir" "overview" "toggle"; }'
   [panelFamily]='bind "Mod+Shift+W" { spawn "inir" "panelFamily" "cycle"; }'
+  [powerProfile]='bind "XF86Launch4" { spawn "inir" "powerProfile" "cycle"; }'
   [region]='bind "Super+Shift+S" { spawn "inir" "region" "screenshot"; }
 bind "Super+Shift+X" { spawn "inir" "region" "ocr"; }
-bind "Super+Shift+A" { spawn "inir" "region" "search"; }
-bind "Ctrl+Shift+S" { spawn "inir" "region" "menu"; }'
+bind "Super+Shift+A" { spawn "inir" "region" "search"; }'
   [session]='bind "Super+Shift+E" { spawn "inir" "session" "toggle"; }'
   [settings]='bind "Super+Comma" { spawn "inir" "settings"; }'
   [voiceSearch]='bind "Super+Shift+V" { spawn "inir" "voiceSearch" "toggle"; }'
@@ -385,10 +391,10 @@ bind "Ctrl+Shift+S" { spawn "inir" "region" "menu"; }'
   [ytmusic]='bind "Mod+M+Space" { spawn "inir" "ytmusic" "playPause"; }'
 )
 
-IPC_ALL_TARGETS=(ai altSwitcher appCatalog audio background bar brightness cheatsheet clipboard cliphistService closeConfirm controlPanel coverflowSelector customWidgets gamemode globalActions keyboard lock mediaControls memory minimize mpris notifications osd osdVolume osk overlay overview packageSearch panelFamily recordingOsd region search session settings settingsNav shellUpdate sidebarLeft sidebarRight taskview tiling voiceSearch wactionCenter waffleAltSwitcher wallpaperSelector wbar widgetpower wnotificationCenter wwidgets ytmusic zoom)
+IPC_ALL_TARGETS=(ai altSwitcher appCatalog audio background bar brightness cheatsheet clipboard cliphistService closeConfirm controlPanel coverflowSelector customWidgets gamemode globalActions keyboard lock mediaControls memory minimize mpris notifications osd osdVolume osk overlay overview packageSearch panelFamily powerProfile recordingOsd region search session settings settingsNav shellUpdate sidebarLeft sidebarRight taskview tiling voiceSearch wactionCenter waffleAltSwitcher wallpaperSelector wbar widgetpower wnotificationCenter wwidgets ytmusic zoom)
 IPC_SHARED_TARGETS=(ai altSwitcher appCatalog audio bar brightness cheatsheet clipboard cliphistService closeConfirm controlPanel coverflowSelector gamemode globalActions keyboard lock mediaControls memory minimize mpris notifications osdVolume osk overview packageSearch panelFamily region session settings settingsNav shellUpdate sidebarLeft sidebarRight tiling voiceSearch wallpaperSelector ytmusic zoom)
 IPC_II_TARGETS=(overlay)
-IPC_WAFFLE_TARGETS=(background customWidgets osd recordingOsd search taskview wactionCenter waffleAltSwitcher wbar widgetpower wnotificationCenter wwidgets)
+IPC_WAFFLE_TARGETS=(background customWidgets osd powerProfile recordingOsd search taskview wactionCenter waffleAltSwitcher wbar widgetpower wnotificationCenter wwidgets)
 
 declare -gA IPC_KEBAB_ALIASES=(
   [alt-switcher]=altSwitcher
@@ -403,6 +409,7 @@ declare -gA IPC_KEBAB_ALIASES=(
   [osd-volume]=osdVolume
   [package-search]=packageSearch
   [panel-family]=panelFamily
+  [power-profile]=powerProfile
   [recording-osd]=recordingOsd
   [settings-nav]=settingsNav
   [shell-update]=shellUpdate

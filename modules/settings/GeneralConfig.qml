@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Io
 import QtQuick.Layouts
+import Quickshell.Services.UPower
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
@@ -209,6 +210,35 @@ ContentPage {
                     : Translation.tr("No charge limit active")
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colSubtext
+            }
+
+            SettingsDivider {}
+
+            ContentSubsection {
+                title: Translation.tr("Power Profile")
+                tooltip: Translation.tr("Select the preferred system power profile (Fn+Q to cycle)")
+
+                ConfigSelectionArray {
+                    id: powerProfileSelector
+                    currentValue: PowerProfiles.profile === PowerProfile.PowerSaver ? "power-saver" : PowerProfiles.profile === PowerProfile.Performance ? "performance" : "balanced"
+                    onSelected: newValue => {
+                        PowerProfilePersistence.setProfile(newValue);
+                    }
+                    options: [
+                        {
+                            displayName: Translation.tr("Power Saver"),
+                            value: "power-saver"
+                        },
+                        {
+                            displayName: Translation.tr("Balanced"),
+                            value: "balanced"
+                        },
+                        ...(PowerProfiles.hasPerformanceProfile ? [{
+                            displayName: Translation.tr("Performance"),
+                            value: "performance"
+                        }] : [])
+                    ]
+                }
             }
         }
     }

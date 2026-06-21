@@ -1,0 +1,33 @@
+---
+title: iNiR
+description: Documentation for omsenjalia/iNiR — a personalized fork of snowarch/iNiR (Niri + Quickshell)
+template: splash
+hero:
+  tagline: A personalized fork of snowarch/iNiR — usability-first Niri shell with custom modules, AI integration, and power management.
+  actions:
+    - text: Get Started
+      link: /guide/install/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/omsenjalia/iNiR
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Material Design 3" icon="seti:css">
+    Dynamic color theming powered by matugen/Material You. Colors auto-generated from your wallpaper.
+  </Card>
+  <Card title="Quickshell Widgets" icon="seti:json">
+    Full-featured shell with sidebars, overview, media controls, on-screen keyboard, emoji picker, and clipboard history — all built with Quickshell (Qt6/QML).
+  </Card>
+  <Card title="Custom Additions" icon="puzzle">
+    Fork-specific features: Power Profile cycling (Fn+Q), System Settings app, and Ollama/Gemini AI integration.
+  </Card>
+  <Card title="AI Agent Friendly" icon="open-book">
+    Comprehensive CLAUDE.md and structured documentation designed for AI coding assistants to understand and modify the codebase effectively.
+  </Card>
+</CardGrid>

@@ -23,7 +23,7 @@ QML_DIRS = [
     REPO_ROOT / "GlobalStates.qml",
     REPO_ROOT / "shell.qml",
 ]
-IPC_MD = REPO_ROOT / "docs" / "IPC.md"
+IPC_MD = REPO_ROOT / "docs" / "src" / "content" / "docs" / "reference" / "ipc.md"
 OUTPUT = REPO_ROOT / "scripts" / "lib" / "ipc-registry.sh"
 
 # Targets under this IPC.md heading are waffle-only.
