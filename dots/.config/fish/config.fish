@@ -16,7 +16,7 @@ if status is-interactive
     alias clear "printf '\033[2J\033[3J\033[1;1H'" # fix: kitty doesn't clear scrollback properly
     alias celar "printf '\033[2J\033[3J\033[1;1H'"
     alias claer "printf '\033[2J\033[3J\033[1;1H'"
-    alias davinci-resolve="QT_QPA_PLATFORM=xcb davinci-resolve"
+    alias davinci="QT_QPA_PLATFORM=xcb davinci-resolve & disown"
     if command -v eza &>/dev/null
         alias ls 'eza --icons'
     end
