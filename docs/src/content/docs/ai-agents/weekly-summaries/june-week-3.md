@@ -1,9 +1,14 @@
 ---
-title: "feat: port dots-hyprland customizations and docs to iNiR" 
-date: 2026-06-21
-commit: 5de27ad54d3b033a7d0b88bd74f53466c1f02153
-author: omsenjalia
+title: "Weekly Summary: june week 3"
+date: 28/06/26
+week_start: 21/06/26
+week_end: 27/06/26
 ---
+
+### feat: port dots-hyprland customizations and docs to iNiR 
+
+**Date:** 21/06/26 | **Author:** omsenjalia | **Commit:** `5de27ad`
+
 
 ## Changed Files
 
@@ -102,3 +107,6 @@ feat: port dots-hyprland customizations and docs to iNiR
 <!-- AI agents: fill this in after working on related code.
      Explain WHY changes were made, any gotchas, and what
      other agents should know about this change. -->
+
+---
+
