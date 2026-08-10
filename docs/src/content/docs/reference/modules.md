@@ -23,15 +23,16 @@ Users can disable any panel from Settings without touching config files.
 |--------|----------|-------------|
 | `bar/` | `iiBar` | Top bar. Workspaces, clock, system indicators, tray, weather. ~35 QML files. |
 | `verticalBar/` | `iiVerticalBar` | Vertical bar variant for left/right edge placement. |
-| `dock/` | `iiDock` | Application dock. Supports all 4 edges (top/bottom/left/right). |
+| `dock/` | `iiDock` | Application dock. Supports all 4 edges (top/bottom/left/right). Scroll an icon to cycle that app's windows; `dock.notificationBadge` puts an app's pending notification count on its icon. |
 | `background/` | `iiBackground` | Desktop wallpaper layer. Parallax, blur, desktop widget canvas. |
 
 ### Sidebars
 
 | Module | Panel ID | Description |
 |--------|----------|-------------|
-| `sidebarLeft/` | `iiSidebarLeft` | AI chat (Gemini/OpenAI/Ollama), YT Music player, Wallhaven browser, anime tracker, Reddit feed, translator, draggable widgets, World Clock. |
-| `sidebarRight/` | `iiSidebarRight` | Quick toggles, calendar with external sync, notification center, volume mixer, Bluetooth/WiFi management, pomodoro timer, todo, calculator, notepad, system monitor, Screen Time. |
+| `sidebar/` | shared host | Physical left/right layer-shell hosts. They resolve semantic feature/system roles, own focus, masks, animations and live layout resize handles. |
+| `sidebarLeft/` | `iiSidebarLeft` | Feature-role content: AI chat (Gemini/OpenAI/Ollama), YT Music player, Wallhaven browser, anime tracker, translator, draggable widgets and World Clock. The role can occupy either physical edge. |
+| `sidebarRight/` | `iiSidebarRight` | System-role content: quick toggles, calendar with external sync, notification center, volume mixer, Bluetooth/WiFi management, pomodoro timer, todo, calculator, notepad, system monitor and Screen Time. The role can occupy either physical edge. |
 
 ### Overlays
 
@@ -39,11 +40,13 @@ Users can disable any panel from Settings without touching config files.
 |--------|----------|-------------|
 | `overview/` | `iiOverview` | Workspace overview with app search, calculator, and global actions. |
 | `ii/` | `iiOverlay` | Notification overlays and ii-specific UI elements. |
-| `clipboard/` | `iiClipboard` | Clipboard history browser with search and image preview. |
+| `clipboard/` | `iiClipboard` | Clipboard history browser with search and image preview. `Ctrl+P` pins an entry to the top of the list; pins store their own decoded copy in `clipboard.pinned`, so they outlive the cliphist history. |
 | `cheatsheet/` | `iiCheatsheet` | Keybind viewer pulled from compositor config. |
 | `controlPanel/` | `iiControlPanel` | Quick settings panel. |
+| `dashboard/` | `iiDashboard` | Centered hub panel: welcome, clock, agenda (local events + ICS), notifications, todo, notes, media, weather, calendar, system usage, GitHub heatmap. Modular three-column layout with in-panel edit mode; configured in Settings › Dashboard. IPC target `dashboard`. |
 | `mediaControls/` | `iiMediaControls` | MPRIS media player popup with multiple layout presets. |
 | `wallpaperSelector/` | `iiWallpaperSelector` | Wallpaper browser with directory navigation. |
+| `wallpaperLauncher/` | `iiWallpaperLauncher` | Shared compact wallpaper carousel with search, static and animated libraries, live preview and IPC navigation. |
 | `sessionScreen/` | `iiSessionScreen` | Logout, reboot, shutdown, suspend screen. |
 
 ### System
@@ -60,6 +63,8 @@ Users can disable any panel from Settings without touching config files.
 | `tilingOverlay/` | `iiTilingOverlay` | Tiling hints overlay. |
 | `shellUpdate/` | `iiShellUpdate` | Shell update notification banner. |
 | `recordingOsd/` | `iiRecordingOsd` | Screen recording indicator (disabled by default). |
+| `workspaceStrip/` | `iiWorkspaceStrip` | Optional edge navigator with cached workspace previews, selected-card app summaries, window focus and close controls, drag-to-move, scroll navigation, and MPRIS media controls. Hover the configured edge to open it, then hover a card to inspect that workspace. Shared with waffle. IPC target `workspaceStrip`. |
+| `mascot/` | `iiMascotCompanion` | Playful full-body mascot companion: peeks from screen edges, reacts to shell events (music, battery, network, updates, notifications, screenshots, gaming, unlock), plays chase/hide-and-seek, and can physically interact with desktop widgets in chaos mode. Curated poses and per-surface overrides live in Settings › Mascot; a desktop widget variant lives in Settings › Widgets. Never over fullscreen, game mode, lock or session screens. Shared with waffle. IPC targets `mascot`, `mascotMood`. |
 
 ## Waffle Panels
 
@@ -99,7 +104,7 @@ Users can disable any panel from Settings without touching config files.
 
 ## Shared Infrastructure
 
-### modules/common/ (~178 files)
+### modules/common/ (~203 files)
 
 The foundation everything else builds on.
 
@@ -109,7 +114,7 @@ The foundation everything else builds on.
 | **Appearance.qml** | ii visual tokens. ~500 properties covering colors, rounding, typography, animation. |
 | **Directories.qml** | Centralized path resolution. Config, cache, data, scripts, media directories. |
 | **widgets/** | 130+ reusable widgets registered in `widgets/qmldir`. Layout, input, display, media, and specialized components. |
-| **ThemePresets.qml** | 44 built-in theme presets. |
+| **ThemePresets.qml** | 46 built-in theme presets. |
 | **StylePresets.qml** | Style variant definitions. |
 
 ## Current notable modules
@@ -145,11 +150,11 @@ If no timezones are configured, it suggests useful zones from the user's locale/
 
 Some panels work under both families. They keep their `ii` prefix but load in waffle mode too:
 
-`iiCheatsheet`, `iiOnScreenKeyboard`, `iiOverlay`, `iiOverview`, `iiRegionSelector`, `iiScreenCorners`, `iiWallpaperSelector`, `iiClipboard`, `iiRecordingOsd`
+`iiCheatsheet`, `iiOnScreenKeyboard`, `iiOverlay`, `iiOverview`, `iiRegionSelector`, `iiScreenCorners`, `iiWallpaperSelector`, `iiWallpaperLauncher`, `iiClipboard`, `iiRecordingOsd`, `iiWorkspaceStrip`, `iiMascotCompanion`
 
 ## For contributors
 
-1. Check the AGENTS.md in the module directory you're editing (if one exists)
+1. Read [Architecture Overview](ARCHITECTURE_OVERVIEW.md) to locate the module's place in the tree and its owning family
 2. Identify which family owns the module before making visual changes
 3. Use the correct token system: `Appearance.*` for ii, `Looks.*` for waffle
 4. Register new panels in the appropriate panels file

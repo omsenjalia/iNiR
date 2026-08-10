@@ -33,10 +33,6 @@ binds {
     // iNiR shell overlays & tools
     // ═══════════════════════════════════════════════════════════════════════
 
-    // Alt-Tab window switcher (iNiR's animated switcher).
-    Alt+Tab { spawn "inir" "altSwitcher" "next"; }
-    Alt+Shift+Tab { spawn "inir" "altSwitcher" "previous"; }
-
     // Crosshair overlay toggle.
     Super+G { spawn "inir" "overlay" "toggle"; }
 
@@ -274,4 +270,11 @@ binds {
     // Power profile cycling (Fn+Q)
     XF86Launch4 allow-when-locked=true { spawn "inir" "powerProfile" "cycle"; }
     Shift+XF86Launch4 allow-when-locked=true { spawn "inir" "powerProfile" "cycle"; }
+}
+
+recent-windows {
+    binds {
+        Alt+Tab { next-window; }
+        Alt+Shift+Tab { previous-window; }
+    }
 }

@@ -301,7 +301,7 @@ These checks cover:
 | QML code (`make install` / package style) | `/usr/share/quickshell/inir/` or `/usr/local/share/quickshell/inir/` |
 | User config                               | `~/.config/illogical-impulse/config.json`                            |
 | State files                               | `~/.local/state/quickshell/user/`                                    |
-| Cache                                     | `~/.cache/quickshell/inir/`                                          |
+| Cache                                     | `~/.cache/inir/`                                                     |
 | Launcher                                  | `inir` in the install prefix                                         |
 | Super daemon                              | `~/.local/bin/inir_super_overview_daemon.py`                         |
 | Daemon service                            | `~/.config/systemd/user/inir-super-overview.service`                 |
@@ -314,7 +314,7 @@ These checks cover:
 | GTK themes      | `~/.config/gtk-3.0/`, `~/.config/gtk-4.0/`                                         |
 | Qt themes       | `~/.config/kdeglobals`, `~/.config/Kvantum/`                                       |
 | Color schemes   | `~/.local/share/color-schemes/`                                                    |
-| Color templates | `~/.config/matugen/` _(legacy directory name — matugen binary no longer required)_ |
+| Color templates | `~/.config/matugen/` _(legacy directory name, matugen binary no longer required)_ |
 | Fuzzel config   | `~/.config/fuzzel/`                                                                |
 | Vesktop themes  | `~/.config/vesktop/themes/`                                                        |
 
@@ -386,7 +386,7 @@ The following are removed without prompting (iNiR-exclusive):
 ~/.config/quickshell/inir/                       # Shell configuration
 ~/.config/illogical-impulse/                     # User preferences
 ~/.local/state/quickshell/user/                  # Notifications, todo
-~/.cache/quickshell/inir/                        # Cache
+~/.cache/inir/                                   # Cache
 ~/.local/bin/inir_super_overview_daemon.py       # Super daemon
 ~/.config/systemd/user/inir-super-overview.service # Daemon service
 ~/.config/vesktop/themes/system24.theme.css      # Vesktop theme
@@ -400,7 +400,7 @@ These may be used by other applications. The script asks before removing:
 | Path                                                           | Type         | Default Action                                                                                          |
 | -------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------- |
 | `~/.config/niri/config.kdl`                                    | Essential    | Keep (especially if in Niri session)                                                                    |
-| `~/.config/matugen/`                                           | Optional     | Ask (remove if you do not want to keep iNiR color templates — legacy path, matugen binary not required) |
+| `~/.config/matugen/`                                           | Optional     | Ask (remove if you do not want to keep iNiR color templates; legacy path, matugen binary not required) |
 | `~/.config/fuzzel/`                                            | Optional     | Ask (remove if fuzzel not installed)                                                                    |
 | `~/.config/Kvantum/`                                           | Optional     | Ask (remove if Kvantum not installed)                                                                   |
 | `~/.config/kdeglobals`                                         | Optional     | Ask                                                                                                     |
@@ -466,7 +466,7 @@ systemctl --user disable --now inir-super-overview.service 2>/dev/null
 rm -rf ~/.config/quickshell/inir
 rm -rf ~/.config/illogical-impulse
 rm -rf ~/.local/state/quickshell/user
-rm -rf ~/.cache/quickshell/inir
+rm -rf ~/.cache/inir
 rm -f ~/.local/bin/inir_super_overview_daemon.py
 rm -f ~/.config/systemd/user/inir-super-overview.service
 rm -f ~/.config/vesktop/themes/system24.theme.css
