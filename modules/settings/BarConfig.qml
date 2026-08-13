@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Dialogs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
@@ -42,6 +43,26 @@ ContentPage {
     readonly property bool spectrumEnabled: root.barAppearance === "pill"
         ? (Config.options?.bar?.pill?.musicViz ?? true)
         : (Config.options?.bar?.visualizer?.enable ?? false)
+    readonly property color workspaceThemeIndicatorColor: Appearance.zzzEverywhere ? Appearance.zzz.accentSoft
+        : Appearance.angelEverywhere ? Appearance.angel.colPrimary : Appearance.colors.colPrimary
+    readonly property color workspaceIndicatorPreviewColor: {
+        const saved = Config.options?.bar?.workspaces?.indicatorColor ?? ""
+        if (saved.length === 0)
+            return root.workspaceThemeIndicatorColor
+        const parsed = Qt.color(saved)
+        return parsed.valid ? parsed : root.workspaceThemeIndicatorColor
+    }
+
+    ColorDialog {
+        id: workspaceIndicatorColorDialog
+        selectedColor: root.workspaceIndicatorPreviewColor
+        onAccepted: Config.setNestedValue("bar.workspaces.indicatorColor", selectedColor.toString())
+    }
+
+    SettingsNativeDialogGuard {
+        dialog: workspaceIndicatorColorDialog
+        dialogKey: "bar-workspace-indicator-color"
+    }
 
     function setSpectrumEnabled(enabled): void {
         if (!root.spectrumControlsReady)
@@ -752,6 +773,22 @@ ContentPage {
                             const labels = text.split(",").map(value => value.trim()).filter(value => value.length > 0)
                             if (labels.length > 0)
                                 root.setM3Value("bar.m3.workspaces.numberMap", labels)
+                        }
+                    }
+                }
+
+                ContentSubsection {
+                    visible: root.m3HasWidget("sysTray")
+                    title: Translation.tr("System tray")
+
+                    SettingsSwitch {
+                        Layout.fillWidth: true
+                        buttonIcon: "colors"
+                        text: Translation.tr("Match M3 colors")
+                        checked: Config.options?.bar?.m3?.tray?.monochromeIcons ?? true
+                        onCheckedChanged: root.setM3Value("bar.m3.tray.monochromeIcons", checked)
+                        StyledToolTip {
+                            text: Translation.tr("Use the tray's semantic M3 foreground color instead of each app's original icon colors")
                         }
                     }
                 }
@@ -2382,6 +2419,70 @@ ContentPage {
                 onCheckedChanged: Config.setNestedValue("bar.workspaces.invertScroll", checked)
                 StyledToolTip {
                     text: Translation.tr("Reverse mouse wheel direction for switching workspaces")
+                }
+            }
+
+            SettingsDivider {}
+
+            ContentSubsection {
+                title: Translation.tr("Color")
+
+                ConfigRow {
+                    uniform: true
+
+                    SettingsSwitch {
+                        buttonIcon: "auto_awesome"
+                        text: Translation.tr("Automatic")
+                        checked: Config.options?.bar?.workspaces?.automaticIndicatorColor ?? true
+                        onCheckedChanged: Config.setNestedValue("bar.workspaces.automaticIndicatorColor", checked)
+                    }
+
+                    RippleButton {
+                        Layout.fillWidth: true
+                        implicitHeight: 40
+                        enabled: !(Config.options?.bar?.workspaces?.automaticIndicatorColor ?? true)
+                        opacity: enabled ? 1 : 0.5
+                        colBackground: Appearance.colors.colLayer2
+                        colBackgroundHover: Appearance.colors.colLayer2Hover
+                        colRipple: Appearance.colors.colLayer2Active
+                        downAction: () => workspaceIndicatorColorDialog.open()
+
+                        contentItem: RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 10
+                            spacing: 8
+
+                            Rectangle {
+                                width: 18
+                                height: 18
+                                radius: 9
+                                color: root.workspaceIndicatorPreviewColor
+                                border.width: 1
+                                border.color: Appearance.colors.colOutline
+                            }
+
+                            StyledText {
+                                Layout.fillWidth: true
+                                text: Translation.tr("Color")
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                color: Appearance.colors.colOnLayer1
+                            }
+
+                            StyledText {
+                                text: root.workspaceIndicatorPreviewColor.toString().toUpperCase().substring(0, 7)
+                                font.pixelSize: Appearance.font.pixelSize.smallest
+                                font.family: Appearance.font.family.monospace
+                                color: Appearance.colors.colSubtext
+                            }
+
+                            MaterialSymbol {
+                                text: "edit"
+                                iconSize: 16
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                    }
                 }
             }
 
