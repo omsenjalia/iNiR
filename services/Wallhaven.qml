@@ -82,6 +82,11 @@ QtObject {
     property int minSearchIntervalMs: 1200
     property int minTagIntervalMs: 1200
     property real _nextSearchAllowedMs: 0
+
+    property Timer _pendingSearchTimer: Timer {
+        interval: Math.max(0, root._nextSearchAllowedMs - root.nowMs)
+        onTriggered: root._processPendingSearch()
+    }
     property real _nextTagAllowedMs: 0
 
     // Pending search request (coalesced)
@@ -95,7 +100,7 @@ QtObject {
             root.nowMs = Date.now()
             if (!root.pendingSearch)
                 return
-            if (root.runningRequests > 0)
+            if (root.runningRequests > 0 || root.searchProcess.running)
                 return
             if (root.nowMs < root._nextSearchAllowedMs)
                 return
@@ -182,12 +187,13 @@ QtObject {
     property int _currentSearchDisplayLimit: 24
     property int _currentSearchGeneration: 0
     property int searchGeneration: 0
+    property int _searchToken: 0
+    property int _activeSearchToken: 0
 
     property Process searchProcess: Process {
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root._handleSearchResponse(text)
-            }
+        stdout: StdioCollector { id: searchStdout }
+        onExited: (_exitCode, _exitStatus) => {
+            root._handleSearchResponse(searchStdout.text ?? "")
         }
     }
 
@@ -567,7 +573,7 @@ QtObject {
     }
 
     // Config-driven options
-    property string apiKey: Config.options?.sidebar?.wallhaven?.apiKey ?? ""
+    property string apiKey: (Config.options?.sidebar?.wallhaven?.apiKey ?? "").trim()
     property int defaultLimit: Config.options?.sidebar?.wallhaven?.limit ?? 24
     property bool allowNsfw: Persistent.states?.booru?.allowNsfw ?? false
     property string sortingMode: "toplist"
@@ -637,11 +643,19 @@ QtObject {
         }
         params.push("purity=" + purity)
 
+        // Wallhaven's toplist+query only returns the week's hot posts for the tag
+        // (tiny, unpageable sets). Tag searches use the API's default relevance
+        // ordering; toplist applies to tagless browsing.
+        const hasTags = q.length > 0
         var sorting = sortingMode
-        params.push("sorting=" + sorting)
-        params.push("order=desc")
-        if (sorting === "toplist" && topRange.length > 0) {
-            params.push("topRange=" + topRange)
+        if (hasTags && sorting === "toplist")
+            sorting = "relevance"
+        if (sorting !== "relevance")
+            params.push("sorting=" + sorting)
+        if (sorting === "toplist") {
+            params.push("order=desc")
+            if (topRange.length > 0)
+                params.push("topRange=" + topRange)
         }
 
         if (apiKey && apiKey.length > 0) {
@@ -683,7 +697,8 @@ QtObject {
         root.activeFitProfile = requestedFit
 
         if ((requestedProvider === "wallhaven" && root.isRateLimited)
-                || runningRequests > 0 || root.nowMs < root._nextSearchAllowedMs) {
+                || runningRequests > 0 || root.searchProcess.running
+                || root.nowMs < root._nextSearchAllowedMs) {
             root.pendingSearch = {
                 tags: requestedTags,
                 nsfw: nsfw,
@@ -694,6 +709,10 @@ QtObject {
                 provider: requestedProvider,
                 fitProfile: requestedFit
             }
+            // Without an in-flight response to trigger _processPendingSearch,
+            // a throttled search would stay queued forever.
+            if (runningRequests <= 0)
+                root._pendingSearchTimer.restart()
             return
         }
 
@@ -717,6 +736,9 @@ QtObject {
             "message": ""
         })
 
+        root._searchToken += 1
+        root._activeSearchToken = root._searchToken
+
         root._currentSearchUrl = url
         root._currentSearchResponse = newResponse
         root._currentSearchProvider = requestedProvider
@@ -725,7 +747,7 @@ QtObject {
         root._currentSearchGeneration = requestedGeneration
         runningRequests += 1
 
-        const command = ["/usr/bin/curl", "-s", "--max-time", "20"]
+        const command = ["/usr/bin/curl", "-s", "--max-time", "20", "-w", "\n__HTTP__%{http_code}"]
         if (requestedProvider === "wallhaven")
             command.push("-H", "User-Agent: " + defaultUserAgent)
         else if (requestedProvider === "waifu.im")
@@ -735,18 +757,35 @@ QtObject {
         root.searchProcess.running = true
     }
 
+    function _extractJsonPayload(text): string {
+        const raw = String(text ?? "")
+        const objStart = raw.indexOf("{")
+        const objEnd = raw.lastIndexOf("}")
+        if (objStart >= 0 && objEnd > objStart)
+            return raw.substring(objStart, objEnd + 1)
+        const arrStart = raw.indexOf("[")
+        const arrEnd = raw.lastIndexOf("]")
+        if (arrStart >= 0 && arrEnd > arrStart)
+            return raw.substring(arrStart, arrEnd + 1)
+        return raw.trim()
+    }
+
     function _handleSearchResponse(text): void {
+        const token = root._activeSearchToken
         runningRequests = Math.max(0, runningRequests - 1)
-        
+
         var newResponse = root._currentSearchResponse
         if (!newResponse) {
             root._processPendingSearch()
             return
         }
+        if (token !== root._searchToken)
+            return
 
         if (root._currentSearchGeneration !== root.searchGeneration) {
             root._destroyResponsesLater([newResponse])
-            root._currentSearchResponse = null
+            if (root._currentSearchResponse === newResponse)
+                root._currentSearchResponse = null
             root._processPendingSearch()
             return
         }
@@ -754,6 +793,45 @@ QtObject {
         if (!text || text.length === 0) {
             _log("[Wallhaven] Request failed: empty response")
             newResponse.message = failMessage
+            root._appendResponse(newResponse)
+            root.responseFinished()
+            if (root._currentSearchResponse === newResponse)
+                root._currentSearchResponse = null
+            root._processPendingSearch()
+            return
+        }
+
+        let httpStatus = 0
+        let body = text
+        const httpMarker = "\n__HTTP__"
+        const httpIdx = text.lastIndexOf("\n__HTTP__")
+        if (httpIdx >= 0) {
+            body = text.substring(0, httpIdx)
+            httpStatus = parseInt(text.substring(httpIdx + httpMarker.length), 10) || 0
+        } else {
+            const altIdx = text.lastIndexOf("__HTTP__")
+            if (altIdx >= 0) {
+                body = text.substring(0, altIdx).replace(/\n$/, "")
+                httpStatus = parseInt(text.substring(altIdx + 8), 10) || 0
+            }
+        }
+        body = root._extractJsonPayload(body)
+
+        if (httpStatus === 429) {
+            root.rateLimitedUntilMs = Date.now() + 30000
+            newResponse.message = Translation.tr("Wallhaven rate limit reached. Wait a moment and try again.")
+            root._appendResponse(newResponse)
+            root.responseFinished()
+            root._currentSearchResponse = null
+            root._processPendingSearch()
+            return
+        }
+        if (httpStatus > 0 && httpStatus !== 200) {
+            _log("[Wallhaven] HTTP", httpStatus)
+            if (httpStatus === 401)
+                newResponse.message = Translation.tr("Wallhaven rejected your API key. Check the key in settings and that your account allows NSFW.")
+            else
+                newResponse.message = Translation.tr("Wallhaven request failed (HTTP %1).").arg(httpStatus)
             root._appendResponse(newResponse)
             root.responseFinished()
             root._currentSearchResponse = null
@@ -764,7 +842,19 @@ QtObject {
         try {
             let images = []
             if (root._currentSearchProvider === "wallhaven") {
-                var payload = JSON.parse(text)
+                var payload = JSON.parse(body)
+                if (payload && payload.error) {
+                    const apiError = String(payload.error)
+                    newResponse.message = apiError.toLowerCase().includes("unauthor")
+                        ? Translation.tr("Wallhaven rejected your API key. Check the key in settings and that your account allows NSFW.")
+                        : Translation.tr("Wallhaven API error: %1").arg(apiError)
+                    console.log("[Wallhaven] API error:", apiError)
+                    root._appendResponse(newResponse)
+                    root.responseFinished()
+                    root._currentSearchResponse = null
+                    root._processPendingSearch()
+                    return
+                }
                 var list = payload.data || []
                 images = list.map(function(item) {
                     var path = item.path || ""
@@ -797,7 +887,7 @@ QtObject {
                     }
                 })
             } else if (root._currentSearchProvider === "commons") {
-                const payload = JSON.parse(text)
+                const payload = JSON.parse(body)
                 const pages = payload?.query?.pages ?? {}
                 images = Object.keys(pages).map(key => pages[key]).map(pageData => {
                     const info = pageData?.imageinfo?.[0] ?? {}
@@ -823,7 +913,7 @@ QtObject {
                     }
                 })
             } else if (root._currentSearchProvider === "picsum") {
-                const payload = JSON.parse(text)
+                const payload = JSON.parse(body)
                 const fit = root._currentSearchFitProfile
                 const fitToMonitor = fit?.mode !== "any" && fit?.width > 0 && fit?.height > 0
                 images = (Array.isArray(payload) ? payload : []).map(item => {
@@ -858,7 +948,7 @@ QtObject {
             } else {
                 const provider = Booru.providers[root._currentSearchProvider]
                 const payload = provider?.manualParseFunc
-                    ? provider.manualParseFunc(text) : JSON.parse(text)
+                    ? provider.manualParseFunc(body) : JSON.parse(body)
                 images = provider?.manualParseFunc
                     ? payload : (provider?.mapFunc ? provider.mapFunc(payload) : [])
             }
@@ -866,7 +956,12 @@ QtObject {
             if (images.length > root._currentSearchDisplayLimit)
                 images = images.slice(0, root._currentSearchDisplayLimit)
             newResponse.images = images
-            newResponse.message = images.length > 0 ? "" : failMessage
+            if (images.length > 0)
+                newResponse.message = ""
+            else if ((newResponse.page || 1) > 1)
+                newResponse.message = Translation.tr("No more results for this search.")
+            else
+                newResponse.message = Translation.tr("No wallpapers found for these tags and filters.")
         } catch (e) {
             console.log("[Wallhaven] Failed to parse response:", e)
             newResponse.message = failMessage
