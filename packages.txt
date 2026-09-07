@@ -1,4 +1,4 @@
-# Installed Packages — generated 2026-08-25T15:30:53+05:30 by brain/execution/dotfiles_pkg_sync.sh
+# Installed Packages — generated 2026-09-07T10:01:12+05:30 by brain/execution/dotfiles_pkg_sync.sh
 # Sections mirror brain/references/packages.md. Do not hand-edit.
 ## Explicitly installed (native repos)
 
@@ -42,7 +42,6 @@ cloudflare-warp-bin
 cryptsetup
 curlftpfs
 davinci-ffmpeg-encoder-plugin
-davinci-resolve
 devin-desktop
 dialog
 discover
@@ -51,6 +50,7 @@ dmraid
 docker
 dosfstools
 downgrade
+dpkg
 dracut
 drkonqi
 droidcam-obs-plugin
@@ -202,6 +202,8 @@ lzop
 man-db
 man-pages
 maplemono-nf-unhinted
+mcpelauncher-linux-git
+mcpelauncher-ui-git
 mdadm
 meld
 memtest86+
@@ -357,6 +359,8 @@ vlc-plugins-all
 wacomtablet
 waybar
 waybar-updates
+waydroid
+waydroid-image-gapps
 whatsdesk-bin
 which
 whitesur-icon-theme
@@ -398,7 +402,6 @@ catppuccin-cursors-macchiato
 catppuccin-gtk-theme-macchiato
 claude-desktop-appimage
 davinci-ffmpeg-encoder-plugin
-davinci-resolve
 devin-desktop
 foo2zjs-nightly
 gowall-bin
@@ -437,6 +440,7 @@ yay-debug
 ## Flatpak apps
 
 ```
+io.mrarm.mcpelauncher
 ```
 
 ## npm global packages
