@@ -19,6 +19,8 @@ custom_packages() {
     hermes-agent-git
     hplip # printer
     foo2zjs # printer
+    waydroid 
+    waydroid-image-gapps
 
     # Leave this no-op command to prevent syntax errors
     :
