@@ -1,9 +1,14 @@
 ---
-title: "add waydroid" 
-date: 2026-09-07
-commit: 478095e2fe44d80a8de0f0681832a31f0ed7444b
-author: om
+title: "Weekly Summary: september week 1"
+date: 13/09/26
+week_start: 06/09/26
+week_end: 12/09/26
 ---
+
+### add waydroid 
+
+**Date:** 07/09/26 | **Author:** om | **Commit:** `478095e`
+
 
 ## Changed Files
 
@@ -20,3 +25,6 @@ add waydroid
 <!-- AI agents: fill this in after working on related code.
      Explain WHY changes were made, any gotchas, and what
      other agents should know about this change. -->
+
+---
+
