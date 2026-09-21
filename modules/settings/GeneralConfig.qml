@@ -20,6 +20,15 @@ ContentPage {
         summary: Translation.tr("Audio · power · locale · input · safety")
         currentValue: root.activeSection
         onSelected: value => root.activeSection = value
+        searchAliases: ({
+            "battery": "power",
+            "language": "locale",
+            "policies": "safety",
+            "sounds": "audio",
+            "time": "locale",
+            "work safety": "safety",
+            "lock screen": "safety"
+        })
         options: [
             { displayName: Translation.tr("Audio"), icon: "volume_up", value: "audio" },
             { displayName: Translation.tr("Power"), icon: "battery_android_full", value: "power" },
@@ -35,9 +44,11 @@ ContentPage {
         command: [Directories.aiTranslationScriptPath, translationProc.locale]
     }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "audio"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "audio"
-        visible: root.activeSection === "audio"
         expanded: true
         icon: "volume_up"
         title: Translation.tr("Audio")
@@ -90,10 +101,14 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "power"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "power"
-        visible: root.activeSection === "power"
         expanded: true
         icon: "battery_android_full"
         title: Translation.tr("Battery")
@@ -266,10 +281,14 @@ ContentPage {
             }
         }
     }
+        }
+    }
     
+    SettingsTaskLoader {
+        requested: root.activeSection === "locale"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "locale"
-        visible: root.activeSection === "locale"
         expanded: true
         icon: "language"
         title: Translation.tr("Language")
@@ -292,7 +311,7 @@ ContentPage {
                         },
                         ...Translation.allAvailableLanguages.map(lang => {
                             return {
-                                displayName: lang,
+                                displayName: Translation.languageDisplayName(lang),
                                 value: lang
                             };
                         })
@@ -329,11 +348,15 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "safety" && !(Config.options?.settingsUi?.easyMode ?? false)
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "safety"
-        visible: root.activeSection === "safety" && !(Config.options?.settingsUi?.easyMode ?? false)
-        expanded: true
+        expanded: false
         icon: "rule"
         title: Translation.tr("Policies")
 
@@ -375,12 +398,16 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "audio"
+        sourceComponent: Component {
     SettingsCardSection {
         id: soundsSection
         settingsTaskSection: "audio"
-        visible: root.activeSection === "audio"
-        expanded: true
+        expanded: false
         icon: "notification_sound"
         title: Translation.tr("Sounds")
 
@@ -492,11 +519,15 @@ ContentPage {
             }
         }
     }
+        }
+    }
     
+    SettingsTaskLoader {
+        requested: root.activeSection === "locale"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "locale"
-        visible: root.activeSection === "locale"
-        expanded: true
+        expanded: false
         icon: "nest_clock_farsight_analog"
         title: Translation.tr("Time")
 
@@ -571,10 +602,14 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "input"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "input"
-        visible: root.activeSection === "input"
         expanded: true
         icon: "keyboard"
         title: Translation.tr("Keyboard")
@@ -661,11 +696,15 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "input" && !(Config.options?.settingsUi?.easyMode ?? false)
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "input"
-        visible: root.activeSection === "input" && !(Config.options?.settingsUi?.easyMode ?? false)
-        expanded: true
+        expanded: false
         icon: "select_window"
         title: Translation.tr("Window Management")
 
@@ -684,11 +723,15 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "safety" && !(Config.options?.settingsUi?.easyMode ?? false)
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "safety"
-        visible: root.activeSection === "safety" && !(Config.options?.settingsUi?.easyMode ?? false)
-        expanded: true
+        expanded: false
         icon: "work_alert"
         title: Translation.tr("Work safety")
 
@@ -720,11 +763,15 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "locale"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "locale"
-        visible: root.activeSection === "locale"
-        expanded: true
+        expanded: false
         icon: "waving_hand"
         title: Translation.tr("Boot greeting")
 
@@ -784,10 +831,14 @@ ContentPage {
             }
         }
     }
+        }
+    }
 
+    SettingsTaskLoader {
+        requested: root.activeSection === "safety"
+        sourceComponent: Component {
     SettingsCardSection {
         settingsTaskSection: "safety"
-        visible: root.activeSection === "safety"
         expanded: true
         icon: "lock"
         title: Translation.tr("Lock screen")
@@ -1102,6 +1153,8 @@ ContentPage {
                     }
                 }
             }
+        }
+    }
         }
     }
 }
